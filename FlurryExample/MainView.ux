@@ -1,0 +1,6 @@
+<App>
+	<Panel>
+		<Flurry.Analytics iOSToken="IOS_TOKEN" AndroidToken="ANDROID_TOKEN"/>
+		<Text Value="You should have events on your Real Time Dashboard" TextWrapping="Wrap"/>
+	</Panel>
+</App>

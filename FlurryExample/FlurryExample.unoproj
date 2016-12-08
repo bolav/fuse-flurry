@@ -1,0 +1,12 @@
+{
+  "RootNamespace":"",
+  "Packages": [
+  	"Fuse"
+  ],
+  "Projects": [
+      "../src/Flurry-Analytics/Flurry.Analytics.unoproj"
+  ],
+  "Includes": [
+    "*"
+  ]
+}
