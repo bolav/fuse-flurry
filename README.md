@@ -24,3 +24,22 @@ Log in to [https://y.flurry.com/admin/applications], and get your API keys. Acco
 You should now be able to run, and get the result in your realtime analyitcs.
 
 
+## JavaScript API
+
+### require
+
+    var flurry = require('Flurry/Analytics');
+
+### logEvent
+
+    flurry.logEvent("FuseEvent");
+    flurry.logEvent("FuseEvent", {Author: "John Q", User_Status: "Registered"});
+
+### Timed Event
+
+    flurry.logEvent("FuseEvent", {}, true);
+    flurry.endTimedEvent("FuseEvent");
+
+    flurry.logEvent("FuseEvent", {Author: "John Q", User_Status: "Registered", Some_Other: "Created"}, true);
+    flurry.endTimedEvent("FuseEvent", { Some_Other: "Updated" });
+
