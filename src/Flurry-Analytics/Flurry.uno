@@ -11,7 +11,9 @@ using Fuse.Controls.Native.Android;
 namespace Flurry
 {
 
-    [ForeignInclude(Language.Java,"com.flurry.android.FlurryAgent")]
+    [ForeignInclude(Language.Java,
+        "com.flurry.android.FlurryAgent",
+        "java.util.HashMap")]
     public class Analytics : Behavior {
         public Analytics () {
             debug_log "Constructor";
@@ -90,8 +92,8 @@ namespace Flurry
         @{
             HashMap<String,String> param = new HashMap<String,String>();
 
-            for (int = 0; i < len; i++) {
-                param.put(keys[i], vals[i]);
+            for (int i = 0; i < len; i++) {
+                param.put(keys.get(i), vals.get(i));
             }
             FlurryAgent.logEvent(name, param, timed);
         @}
@@ -116,8 +118,8 @@ namespace Flurry
         @{
             HashMap<String,String> param = new HashMap<String,String>();
 
-            for (int = 0; i < len; i++) {
-                param.put(keys[i], vals[i]);
+            for (int i = 0; i < len; i++) {
+                param.put(keys.get(i), vals.get(i));
             }
             FlurryAgent.endTimedEvent(name, param);
         @}
