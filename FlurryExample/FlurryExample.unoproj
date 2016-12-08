@@ -1,7 +1,9 @@
 {
   "RootNamespace":"",
   "Packages": [
-  	"Fuse"
+  	"Fuse",
+    "FuseJS",
+    "Fuse.BasicTheme"
   ],
   "Projects": [
       "../src/Flurry-Analytics/Flurry.Analytics.unoproj"

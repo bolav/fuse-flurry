@@ -1,6 +1,7 @@
 {
   "Packages": [
-  	"Fuse"
+  	"Fuse",
+    "FuseJS"
   ],
   "Includes": [
     "*"

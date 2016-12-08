@@ -1,6 +1,20 @@
 <App>
-	<Panel>
+	<ClientPanel>
+		<JavaScript>
+			var flurry = require('Flurry/Analytics');
+			console.log(flurry);
+			function log() {
+				console.log("Loggin to Flurry");
+				flurry.logEvent("FuseEvent");
+			}
+			module.exports = {
+				log: log
+			}
+		</JavaScript>
 		<Flurry.Analytics iOSToken="IOS_TOKEN" AndroidToken="ANDROID_TOKEN"/>
-		<Text Value="You should have events on your Real Time Dashboard" TextWrapping="Wrap"/>
-	</Panel>
+		<StackPanel>
+			<Text Value="You should have events on your Real Time Dashboard" TextWrapping="Wrap"/>
+			<Basic.Button Text="Logit" Clicked="{log}" />
+		</StackPanel>
+	</ClientPanel>
 </App>

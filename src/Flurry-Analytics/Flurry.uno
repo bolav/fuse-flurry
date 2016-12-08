@@ -84,6 +84,56 @@ namespace Flurry
 
         @}
 
+        [Foreign(Language.Java)]
+        extern(android)
+        public static void LogEvent(string name, string[] keys, string[] vals, int len, bool timed)
+        @{
+            HashMap<String,String> param = new HashMap<String,String>();
+
+            for (int = 0; i < len; i++) {
+                param.put(keys[i], vals[i]);
+            }
+            FlurryAgent.logEvent(name, param, timed);
+        @}
+
+
+        [Foreign(Language.ObjC)]
+        extern(iOS)
+        public static void LogEvent(string name, string[] keys, string[] vals, int len, bool timed)
+        @{
+            NSDictionary *param = [NSDictionary dictionaryWithObjects:[vals copyArray] forKeys:[keys copyArray]];
+            [::Flurry logEvent:name withParameters:param timed:timed];
+        @}
+
+        extern(!mobile)
+        public static void LogEvent(string name, string[] keys, string[] vals, int len, bool timed) {
+
+        }
+
+        [Foreign(Language.Java)]
+        extern(android)
+        public static void EndTimedEvent(string name, string[] keys, string[] vals, int len)
+        @{
+            HashMap<String,String> param = new HashMap<String,String>();
+
+            for (int = 0; i < len; i++) {
+                param.put(keys[i], vals[i]);
+            }
+            FlurryAgent.endTimedEvent(name, param);
+        @}
+
+
+        [Foreign(Language.ObjC)]
+        extern(iOS)
+        public static void EndTimedEvent(string name, string[] keys, string[] vals, int len)
+        @{
+            NSDictionary *param = [NSDictionary dictionaryWithObjects:[vals copyArray] forKeys:[keys copyArray]];
+            [::Flurry endTimedEvent:name withParameters:param];
+        @}
+
+        extern(!mobile)
+        public static void EndTimedEvent(string name, string[] keys, string[] vals, int len)
+        { }
 
         // One or two tokens? http://stackoverflow.com/questions/15095116/flurry-integration-into-same-app-on-android-and-ios
         static string _token;
