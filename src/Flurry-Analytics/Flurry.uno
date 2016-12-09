@@ -17,13 +17,13 @@ namespace Flurry
     public class Analytics : Behavior {
         public Analytics () {
             debug_log "Constructor";
-            Uno.Platform2.Application.EnteringForeground += OnEnteringForeground;
-            if (Uno.Platform2.Application.State == Uno.Platform2.ApplicationState.Foreground) {
+            Fuse.Platform.Lifecycle.Started += OnStarted;
+            if (Fuse.Platform.Lifecycle.State == Fuse.Platform.ApplicationState.Foreground) {
                 _foreground = true;
             }
         }
 
-        void OnEnteringForeground(Uno.Platform2.ApplicationState newState)
+        void OnStarted(Fuse.Platform.ApplicationState newState)
         {
             _foreground = true;
             Init();
