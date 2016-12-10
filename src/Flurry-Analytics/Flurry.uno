@@ -17,15 +17,20 @@ namespace Flurry
     public class Analytics : Behavior {
         public Analytics () {
             debug_log "Constructor";
-            Fuse.Platform.Lifecycle.Started += OnStarted;
-            if (Fuse.Platform.Lifecycle.State == Fuse.Platform.ApplicationState.Foreground) {
+            if ((Fuse.Platform.Lifecycle.State == Fuse.Platform.ApplicationState.Foreground)
+                || (Fuse.Platform.Lifecycle.State == Fuse.Platform.ApplicationState.Interactive)
+                ) {
                 _foreground = true;
+            }
+            else {
+                Fuse.Platform.Lifecycle.EnteringForeground += OnEnteringForeground;
             }
         }
 
-        void OnStarted(Fuse.Platform.ApplicationState newState)
+        void OnEnteringForeground(Fuse.Platform.ApplicationState newState)
         {
             _foreground = true;
+            Fuse.Platform.Lifecycle.EnteringForeground -= OnEnteringForeground;
             Init();
         }
 
@@ -68,15 +73,14 @@ namespace Flurry
         [Require("Cocoapods.Podfile.Target", "pod 'Flurry-iOS-SDK/FlurryAds'")]
         [Require("Source.Declaration", "#import \"Flurry.h\"")]
         [Foreign(Language.ObjC)]
-        extern(iOS) void InitImpl(string token) 
+        extern(iOS) static void InitImpl(string token)
         @{
-            [::Flurry setDebugLogEnabled:YES];
             [::Flurry startSession:token];
         @}
 
         [Require("Gradle.Dependency.Compile", "com.flurry.android:analytics:6.2.0")]
         [Foreign(Language.Java)]
-        extern(Android) void InitImpl(string token)
+        extern(Android) static void InitImpl(string token)
         @{
             FlurryAgent.init(com.fuse.Activity.getRootActivity(), token);
             FlurryAgent.onStartSession(com.fuse.Activity.getRootActivity(), token);
@@ -140,19 +144,29 @@ namespace Flurry
         // One or two tokens? http://stackoverflow.com/questions/15095116/flurry-integration-into-same-app-on-android-and-ios
         static string _token;
         public string Token {
-            get { return _token; } 
-            set { 
+            get { return _token; }
+            set {
                 _token = value;
                 Init();
             }
         }
 
+        static string _iostoken;
         public string iOSToken {
-            get; set;
+            get { return _iostoken; }
+            set {
+                _iostoken = value;
+                Init();
+            }
         }
 
+        static string _androidtoken;
         public string AndroidToken {
-            get; set;
+            get { return _androidtoken; }
+            set {
+                _androidtoken = value;
+                Init();
+            }
         }
 
 
