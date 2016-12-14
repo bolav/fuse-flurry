@@ -37,7 +37,6 @@ namespace Flurry
         static bool _foreground = false;
         static bool _inited = false;
         void Init() {
-            debug_log "Init";
             if (_inited)
                 return;
             if (Token == null) {
@@ -75,7 +74,19 @@ namespace Flurry
         [Foreign(Language.ObjC)]
         extern(iOS) static void InitImpl(string token)
         @{
-            [::Flurry startSession:token];
+            FlurrySessionBuilder* builder = [[[[FlurrySessionBuilder new]
+                    withLogLevel:FlurryLogLevelAll]
+                    withCrashReporting:YES]
+                    withShowErrorInLog:YES];
+                    // withAppVersion:@"@(Project.Version:Or('1.0.0'))"];
+
+                    // withSessionContinueSeconds:10
+
+            // if (@{_crashreporting:Get()}) {
+            //     [::Flurry setCrashReportingEnabled:YES];
+            // }
+            // [::Flurry setDebugLogEnabled:YES];
+            [::Flurry startSession:token withSessionBuilder:builder];
         @}
 
         [Require("Gradle.Dependency.Compile", "com.flurry.android:analytics:6.2.0")]
@@ -109,6 +120,7 @@ namespace Flurry
         @{
             NSDictionary *param = [NSDictionary dictionaryWithObjects:[vals copyArray] forKeys:[keys copyArray]];
             [::Flurry logEvent:name withParameters:param timed:timed];
+            // [::Flurry logEvent:name];
         @}
 
         extern(!mobile)
@@ -167,6 +179,12 @@ namespace Flurry
                 _androidtoken = value;
                 Init();
             }
+        }
+
+        static bool _crashreporting = false;
+        public bool CrashReporting {
+            get { return _crashreporting; }
+            set { _crashreporting = value; }
         }
 
 

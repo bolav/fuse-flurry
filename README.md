@@ -12,8 +12,8 @@ This project requires `-DCOCOAPODS` on iOS, and `-DGRADLE` on Android.
 
 You can find the example in the `FlurryExample` folder. It contains:
 
-FlurryExample.unoproj - Our project file
-MainView.ux - The Super basic markup for our app (NO UI)
+- FlurryExample.unoproj - Our project file
+- MainView.ux - The Super basic markup for our app (NO UI)
 
 ### Editing the Flurry parts
 
