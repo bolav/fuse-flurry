@@ -33,7 +33,6 @@ namespace Flurry.JS
         // functions
         static object LogEvent(Context context, object[] args)
         {
-            debug_log "LogEvent";
             var n = (string)args[0];
 
             string[] objs;

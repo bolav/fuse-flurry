@@ -187,6 +187,49 @@ namespace Flurry
             set { _crashreporting = value; }
         }
 
+        public void OnHistoryChanged(object r) {
+            debug_log "History Changed!!";
+            debug_log r;
+        }
+
+        public void OnActivePageChanged(object r, Fuse.Visual v) {
+            debug_log "Active Changed!!";
+            debug_log r;
+            debug_log v;
+        }
+
+        Fuse.Navigation.IBaseNavigation _navigation = null;
+        public Fuse.Navigation.IBaseNavigation Navigation {
+            get { return _navigation; }
+            set {
+                // Remove old handler:
+                if (_navigation != null) {
+                    if (_navigation is Fuse.Navigation.INavigation) {
+                        var _in = _navigation as Fuse.Navigation.INavigation;
+                        _in.ActivePageChanged -= OnActivePageChanged;
+                    }
+                    else {
+                        _navigation.HistoryChanged -= OnHistoryChanged;
+                    }
+                }
+
+                // Set value
+                _navigation = value;
+
+                // Add new handler:
+                if (_navigation != null) {
+                    if (_navigation is Fuse.Navigation.INavigation) {
+                        var _in = _navigation as Fuse.Navigation.INavigation;
+                        _in.ActivePageChanged += OnActivePageChanged;
+                    }
+                    else {
+                        _navigation.HistoryChanged += OnHistoryChanged;
+                    }
+                }
+            }
+        }
+
+
 
     }
 
