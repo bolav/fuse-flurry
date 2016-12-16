@@ -1,6 +1,7 @@
 using Uno;
 using Uno.Collections;
 using Fuse;
+using Fuse.Navigation;
 using Flurry.Analytics;
 
 namespace Flurry
@@ -27,30 +28,85 @@ namespace Flurry
 		public string PageParameter {
 			get; set;
 		}
+		public string PathParameter {
+			get; set;
+		}
 		public bool Timed {
 			get; set;
 		}
 
 		bool active = false;
-		public void OnActivePageChanged(object r, Fuse.Visual v) {
+		public void OnActivePageChanged(object r, Fuse.Visual vis) {
 		    if defined(mobile) {
 		    	if (active && Timed) {
 		    		Flurry.Analytics.EndTimedEvent(PageEvent, null, null, 0);
 		    	}
-		    	var keys = new string[] { PageParameter };
-		    	var vals = new string[] { v.Name };
-		    	Flurry.Analytics.LogEvent(PageEvent, keys, vals, 1, Timed);
+
+		    	var k = new List<string>();
+		    	var v = new List<string>();
+
+		    	if (PageParameter != null) {
+		    		k.Add(PageParameter);
+		    		v.Add(vis.Name);
+		    	}
+		    	Flurry.Analytics.LogEvent(PageEvent, k.ToArray(), v.ToArray(), k.Count, Timed);
 		    	active = true;
 		    }
 		}
 
-        Fuse.Navigation.INavigation _navigation = null;
-        public Fuse.Navigation.INavigation Navigation {
+        public void OnHistoryChanged(object r) {
+		    if defined(mobile) {
+		    	if (active && Timed) {
+		    		Flurry.Analytics.EndTimedEvent(PageEvent, null, null, 0);
+		    	}
+
+		    	var k = new List<string>();
+		    	var v = new List<string>();
+
+		    	if (r is Router) {
+		    		var router = r as Router;
+		    		var route = router.GetCurrentRoute();
+		    		var len = route.Length;
+		    		var path = "";
+		    		var page = "";
+		    		debug_log "len " + len;
+		    		for (int i = 0; i < len; i++)
+		    		{
+		    			path = path + "/" + route.Path;
+		    			page = route.Path;
+		    			// debug_log route.Path;
+		    			// debug_log route.Parameter;
+		    			// debug_log route.SubRoute;
+		    			route = route.SubRoute;
+		    		}
+		    		if (PageParameter != null) {
+		    			k.Add(PageParameter);
+		    			v.Add(page);		    			
+		    		}
+		    		if (PathParameter != null) {
+		    			k.Add(PathParameter);
+		    			v.Add(path);
+		    		}
+		    	}
+
+		    	Flurry.Analytics.LogEvent(PageEvent, k.ToArray(), v.ToArray(), k.Count, Timed);
+		    	active = true;
+		    }
+        }
+
+        Fuse.Navigation.IBaseNavigation _navigation = null;
+        public Fuse.Navigation.IBaseNavigation Navigation {
             get { return _navigation; }
             set {
                 // Remove old handler:
                 if (_navigation != null) {
-	                _navigation.ActivePageChanged -= OnActivePageChanged;
+                    if (_navigation is Fuse.Navigation.INavigation) {
+                        var _in = _navigation as Fuse.Navigation.INavigation;
+                        _in.ActivePageChanged -= OnActivePageChanged;
+                    }
+                    else {
+                        _navigation.HistoryChanged -= OnHistoryChanged;
+                    }
                 }
 
                 // Set value
@@ -58,10 +114,17 @@ namespace Flurry
 
                 // Add new handler:
                 if (_navigation != null) {
-	                _navigation.ActivePageChanged += OnActivePageChanged;
+                    if (_navigation is Fuse.Navigation.INavigation) {
+                        var _in = _navigation as Fuse.Navigation.INavigation;
+                        _in.ActivePageChanged += OnActivePageChanged;
+                    }
+                    else {
+                        _navigation.HistoryChanged += OnHistoryChanged;
+                    }
                 }
             }
         }
+
 
 	}
 }
