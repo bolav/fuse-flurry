@@ -125,7 +125,10 @@ namespace Flurry
 
         extern(!mobile)
         public static void LogEvent(string name, string[] keys, string[] vals, int len, bool timed) {
-
+            debug_log "LogEvent[" + name + "] ";
+            for (int i = 0; i < len; i++) {
+                debug_log "    " + keys[i] + " = " + vals[i];
+            }
         }
 
         [Foreign(Language.Java)]

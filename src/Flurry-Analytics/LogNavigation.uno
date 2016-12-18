@@ -55,43 +55,40 @@ namespace Flurry
 		}
 
         public void OnHistoryChanged(object r) {
-		    if defined(mobile) {
-		    	if (active && Timed) {
-		    		Flurry.Analytics.EndTimedEvent(PageEvent, null, null, 0);
-		    	}
+        	if (active && Timed) {
+        		Flurry.Analytics.EndTimedEvent(PageEvent, null, null, 0);
+        	}
 
-		    	var k = new List<string>();
-		    	var v = new List<string>();
+        	var k = new List<string>();
+        	var v = new List<string>();
 
-		    	if (r is Router) {
-		    		var router = r as Router;
-		    		var route = router.GetCurrentRoute();
-		    		var len = route.Length;
-		    		var path = "";
-		    		var page = "";
-		    		debug_log "len " + len;
-		    		for (int i = 0; i < len; i++)
-		    		{
-		    			path = path + "/" + route.Path;
-		    			page = route.Path;
-		    			// debug_log route.Path;
-		    			// debug_log route.Parameter;
-		    			// debug_log route.SubRoute;
-		    			route = route.SubRoute;
-		    		}
-		    		if (PageParameter != null) {
-		    			k.Add(PageParameter);
-		    			v.Add(page);		    			
-		    		}
-		    		if (PathParameter != null) {
-		    			k.Add(PathParameter);
-		    			v.Add(path);
-		    		}
-		    	}
+        	if (r is Router) {
+        		var router = r as Router;
+        		var route = router.GetCurrentRoute();
+        		var len = route.Length;
+        		var path = "";
+        		var page = "";
+        		for (int i = 0; i < len; i++)
+        		{
+        			path = path + "/" + route.Path;
+        			page = route.Path;
+        			// debug_log route.Path;
+        			// debug_log route.Parameter;
+        			// debug_log route.SubRoute;
+        			route = route.SubRoute;
+        		}
+        		if (PageParameter != null) {
+        			k.Add(PageParameter);
+        			v.Add(page);
+        		}
+        		if (PathParameter != null) {
+        			k.Add(PathParameter);
+        			v.Add(path);
+        		}
+        	}
 
-		    	Flurry.Analytics.LogEvent(PageEvent, k.ToArray(), v.ToArray(), k.Count, Timed);
-		    	active = true;
-		    }
+        	Flurry.Analytics.LogEvent(PageEvent, k.ToArray(), v.ToArray(), k.Count, Timed);
+        	active = true;
         }
 
         Fuse.Navigation.IBaseNavigation _navigation = null;
