@@ -12,6 +12,14 @@ namespace Flurry
 	*/
 	public class AnalyticsLogClicks : Behavior, IParentObserver
 	{
+        static AnalyticsLogClicks _instance;
+        public AnalyticsLogClicks() : base() {
+            _instance = this;
+        }
+        public static AnalyticsLogClicks getInstance() {
+            if (_instance == null) return new AnalyticsLogClicks();
+            return _instance;
+        }
 		public string ClickEvent {
 			get; set;
 		}
@@ -30,11 +38,11 @@ namespace Flurry
 
         protected override void OnRooted() {
             base.OnRooted();
-            LookFor(Parent);
+            AddClickedHandlers(Parent);
         }
 
         int depth = 0;
-        void LookFor(Visual vis) {
+        public void AddClickedHandlers(Visual vis) {
             depth++;
             if (depth > 50) {
                 return;
@@ -42,13 +50,20 @@ namespace Flurry
             var c = vis.Children;
             for (int i = 0; i < c.Count; i++)
             {
+                // debug_log depth+ " c["+ i +"]: " + c[i];
                 var v = c[i] as Visual;
                 if (v != null) {
-                    LookFor(v);
+                    AddClickedHandlers(v);
                 }
                 var click = c[i] as Fuse.Gestures.Clicked;
                 if (click != null) {
                     click.Handler += VisClicked;
+                }
+                var nav = c[i] as Fuse.Controls.Navigator;
+                if (nav != null) {
+                    nav.Children.Add(new ClickedLooker() {
+                        ObserverParent = this
+                    });
                 }
             }
             depth--;
@@ -105,11 +120,15 @@ namespace Flurry
             }
         }
 
-        void IParentObserver.OnChildAddedWhileRooted(Node n) {
+        public void NodeAdded(Node n) {
             var v = n as Visual;
             if (v != null) {
-                LookFor(v);
+                AddClickedHandlers(v);
             }
+        }
+
+        void IParentObserver.OnChildAddedWhileRooted(Node n) {
+            NodeAdded(n);
         }
 
         void IParentObserver.OnChildRemovedWhileRooted(Node n) {
@@ -118,6 +137,18 @@ namespace Flurry
         public Fuse.Navigation.IBaseNavigation Navigation {
             get; set;
         }
-
 	}
+
+    class ClickedLooker : Behavior, IParentObserver {
+        public AnalyticsLogClicks ObserverParent {
+            get; set;
+        }
+        void IParentObserver.OnChildAddedWhileRooted(Node n) {
+            // debug_log "ClickedLooker found:";
+            ObserverParent.NodeAdded(n);
+        }
+
+        void IParentObserver.OnChildRemovedWhileRooted(Node n) {
+        }
+    }
 }
